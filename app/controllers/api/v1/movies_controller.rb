@@ -1,17 +1,7 @@
 class Api::V1::MoviesController < ApplicationController
 
   def index
-    movies = Movie.all.map { |movie|
-      genre_names = movie.genres.map { |genre| genre.name }
-      {
-        id: movie.id,
-        title: movie.title,
-        storyline: movie.storyline,
-        release_date: movie.release_date,
-        imdb_link: movie.imdb_link,
-        genres: genre_names
-      }
-    }
+    movies = Movie.all
     render json: movies
   end
 
@@ -26,9 +16,9 @@ class Api::V1::MoviesController < ApplicationController
       params[:genres].map { |genre|
         movie.genres << Genre.find_by(name: genre)
       }
-      render json: 'Movie created!'
+      render json: movie
     else
-      render json: (movie.errors.full_messages)
+      render json: "error"
     end
   end
 
@@ -40,6 +30,11 @@ class Api::V1::MoviesController < ApplicationController
         movie.genres << Genre.find_by(name: genre)
       }
     end
+  end
+
+  def destroy
+    movie = Movie.find(params[:id])
+    movie.destroy
   end
 
   private
